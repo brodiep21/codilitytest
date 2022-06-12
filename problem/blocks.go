@@ -2,50 +2,60 @@ package blocks
 
 func FindMinNumberOfAdditionalLettersForBlocksToBeEqualLengths(s string) int {
 	// Loop over and find the length of the longest block
+	lengthOfLongestBlock, numberOfBlocks := findLengthOfLongestBlock(s)
+
+	// Find how many letters needs to be added to other blocks
+	totalNumberOfAdditionalLetters := 0
+	for i := 0; i <= numberOfBlocks; i++ {
+		startingIndex, endingIndex := findBlock(s, i)
+		lengthOfBlock := endingIndex - startingIndex
+		totalNumberOfAdditionalLetters += lengthOfLongestBlock - lengthOfBlock
+
+	}
+
+	return totalNumberOfAdditionalLetters
+}
+
+func findLengthOfLongestBlock(s string) (int, int) {
 	currentBlock := 0
-	lengthOfLongestBlock := len(findBlock(s, 0))
+	lengthOfLongestBlock := 0
 	for {
-		block := findBlock(s, currentBlock)
-		if len(block) > lengthOfLongestBlock {
-			lengthOfLongestBlock = len(block)
+		startingIndex, endingIndex := findBlock(s, currentBlock)
+		lengthOfBlock := endingIndex - startingIndex
+		if lengthOfBlock > lengthOfLongestBlock {
+			lengthOfLongestBlock = lengthOfBlock
+		}
+		if endingIndex >= len(s) {
+			break
 		}
 		currentBlock++
 	}
-
-	// Find how many letters needs to be added to other blocks
-
-	// Add those numbers together
-	return 6
+	return lengthOfLongestBlock, currentBlock
 }
 
-func findBlock(s string, block int) (string, bool) {
+func findBlock(s string, block int) (int, int) {
 
 	currentBlock := 0
 	startingIndex := 0
 	endingIndex := 0
 
 	for {
-		endOfBlock, endOfString := findEndOfBlock(s, startingIndex)
+		endOfBlock := findEndOfBlock(s, startingIndex)
 		if block == currentBlock {
 			endingIndex = endOfBlock
 			break
 		}
 		startingIndex = endOfBlock
-		if endOfString {
-
-		}
 		currentBlock++
 	}
-	return s[startingIndex:endingIndex]
+	return startingIndex, endingIndex
 }
 
-const endOfString = true
-
-func findEndOfBlock(s string, startingIndex int) (int, bool) {
+func findEndOfBlock(s string, startingIndex int) int {
 	endingIndex := startingIndex + 1
 	for {
 		if endingIndex >= len(s) {
-			return endingIndex, endOfString
+			return endingIndex
 		}
 		if s[startingIndex] != s[endingIndex] {
 			break
